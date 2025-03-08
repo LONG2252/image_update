@@ -1,6 +1,9 @@
 import json
 import requests
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 headers = {
     "Content-Type":"application/json"
