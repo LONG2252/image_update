@@ -14,6 +14,7 @@ class Update:
     def image_relationship(self):
         # 定义两个字典，分别存储本地镜像名称和远程镜像名称
         # 其中，data_dict_1表示本地镜像名称和远程镜像名称的映射关系，data_dict_2表示本地镜像名称和
+        # 远程镜像名称的映射关系
         data_dict_1 = {
             "online_name":"frooodle/s-pdf:latest",
             "local_name":"registry.cn-hangzhou.aliyuncs.com/alex_pc_docker/s-pdf:latest"
