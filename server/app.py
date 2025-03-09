@@ -18,9 +18,13 @@ logging.basicConfig(
 logger = logging.getLogger("app_main_program")
 
 class Update:
-    def __init__(self):
-        os.system("docker pull frooodle/s-pdf:latest >> /dev/null" )
-        os.system("docker pull evil0ctal/douyin_tiktok_download_api:latest >> /dev/null")
+    def download_images(self,image_name):
+        try:
+            os.system(f"docker pull {image_name}>> /dev/null" )
+            return True
+        except Exception as e:
+            logger.error(f"download_images 下载镜像:{image_name} 失败，报错：{e}")
+
     def image_relationship(self):
         # 定义两个字典，分别存储本地镜像名称和远程镜像名称
         # 其中，data_dict_1表示本地镜像名称和远程镜像名称的映射关系，data_dict_2表示本地镜像名称和
@@ -33,24 +37,39 @@ class Update:
             "online_name":"evil0ctal/douyin_tiktok_download_api:latest",
             "local_name":"registry.cn-hangzhou.aliyuncs.com/alex_pc_docker/video_download:latest"
         }
-        return [data_dict_1,data_dict_2]
+        data_dict_3= {
+            "online_name":"library/node:latest",
+            "local_name":"registry.cn-hangzhou.aliyuncs.com/alex_pc_docker/node:latest"
+        }
+        return [data_dict_1,data_dict_2,data_dict_3]
 
     def main(self):
-        logger.info("开始运行")
+        logger.info("开始运行,开始更新镜像")
         try:
             image_dict_list = self.image_relationship()
             msg = ""
+            logger.info(f"开始更新镜像，共{len(image_dict_list)}个")
             for row in image_dict_list:
+                logger.info(f"开始更新镜像:{row['local_name']}")
+                if(self.download_images(row['online_name'])):
+                    logger.info(f"下载镜像: {row['local_name']} 成功")
+                else:
+                    logger.error(f"下载镜像: {row['local_name']} 失败")
+                    continue
                 update_status,error_msg = self.update_images(row['local_name'],self.get_images_id(row['online_name']))
                 if(update_status):
                     delete_count = self.delete_images(row)
-                    msg += f"image_name:{row['local_name']} ,image_id:{self.get_images_id(row['online_name'])} 更新成功，删除镜像{delete_count}个!\n"
+                    ms = f"镜像更新成功，image_name:{row['local_name']} ,image_id:{self.get_images_id(row['online_name'])} 删除镜像{delete_count}个!"
+                    msg += ms + "\n"
+
                 else:
-                    msg += f"image_name:{row['local_name']} ,image_id:{self.get_images_id(row['online_name'])} 更新失败，报错：{error_msg}\n"
+                    ms = f"镜像更新失败，image_name:{row['local_name']} ,image_id:{self.get_images_id(row['online_name'])} ，报错：{error_msg}"
+                    msg += ms + "\n"
+                logger.info(ms)
             logger.info(msg)
             self.send_wechat(msg)
         except Exception as e:
-            logger.error(f"更新镜像失败，报错：{e}")
+            logger.error(f"main 更新镜像失败，报错：{e}")
     def update_images(self,image_name,image_id):
         bash_command_list=[]
         try:
@@ -60,7 +79,7 @@ class Update:
                 os.system(row)
             return True,bash_command_list
         except Exception as e:
-            error_msg = f"更新镜像:{image_name} 失败，报错：{e}"
+            error_msg = f"update_images 更新镜像:{image_name} 失败，报错：{e}"
             logger.error(error_msg)
             return False,error_msg
 
