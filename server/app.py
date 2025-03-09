@@ -18,12 +18,14 @@ logging.basicConfig(
 logger = logging.getLogger("app_main_program")
 
 class Update:
+    #更新测试
     def download_images(self,image_name):
         try:
             os.system(f"docker pull {image_name}>> /dev/null" )
             return True
         except Exception as e:
             logger.error(f"download_images 下载镜像:{image_name} 失败，报错：{e}")
+            return
 
     def image_relationship(self):
         # 定义两个字典，分别存储本地镜像名称和远程镜像名称
@@ -38,13 +40,12 @@ class Update:
             "local_name":"registry.cn-hangzhou.aliyuncs.com/alex_pc_docker/video_download:latest"
         }
         data_dict_3= {
-            "online_name":"library/node:latest",
+            "online_name":"node:latest",
             "local_name":"registry.cn-hangzhou.aliyuncs.com/alex_pc_docker/node:latest"
         }
         return [data_dict_1,data_dict_2,data_dict_3]
 
     def main(self):
-        logger.info("开始运行,开始更新镜像")
         try:
             image_dict_list = self.image_relationship()
             msg = ""
@@ -85,9 +86,13 @@ class Update:
 
 
     def get_images_id(self,image_name):
-        command = "docker images | grep {} | grep latest".format(image_name.split(':')[0])
-        images_txt = os.popen(command).readlines()[0]
-        return images_txt.split()[2]
+        try:
+            command = f"docker images | grep {(image_name.split(':')[0])} | grep latest"
+            images_txt = os.popen(command).readlines()[0]
+            return images_txt.split()[2]
+        except Exception as e:
+            logger.error(f"get_images_id 获取镜像:{image_name} id失败，报错：{e}")
+
 
     def delete_images(self, image_name_dict):
         image_name_list = []
@@ -129,7 +134,7 @@ class Update:
             }
             wecom_function(send_message)
         except Exception as e:
-            logger.error(f"{dt.now().strftime('%Y-%m-%d %H:%M:%S')}发送微信消息失败:{e}")
+            logger.error(f"发送微信消息失败:{e}")
 
 
 if __name__ == "__main__":
