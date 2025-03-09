@@ -12,7 +12,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler('docker_update.log')
+        logging.FileHandler('program.log')
     ]
 )
 logger = logging.getLogger("app_main_program")
