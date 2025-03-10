@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  douyin_tiktok_api:
+    image: registry.cn-hangzhou.aliyuncs.com/alex_pc_docker/video_download:latest
+    ports:
+      - '11080:80'
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - LANGS=zh_CN
+      - TZ=Asia/Shanghai
+    restart: always
