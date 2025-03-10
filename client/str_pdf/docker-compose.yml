@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+  stirling-pdf:
+    image: registry.cn-hangzhou.aliyuncs.com/alex_pc_docker/s-pdf:latest
+    ports:
+      - '18080:8080'
+    volumes:
+      - /data/workspace/str_PDF/trainingData:/usr/share/tessdata # Required for extra OCR languages
+      - /data/workspace/str_PDF/extraConfigs:/configs
+      - /data/workspace/str_PDF/customFiles:/customFiles/
+      - /data/workspace/str_PDF/logs:/logs/
+      - /data/workspace/str_PDF/pipeline:/pipeline/
+    environment:
+      - DOCKER_ENABLE_SECURITY=false
+      - LANGS=zh_CN
+      - TZ=Asia/Shanghai
+    restart: always
